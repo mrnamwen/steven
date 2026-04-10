@@ -29,38 +29,33 @@ bool StevenApp::CreateScene()
     m_spScene = NiNew NiNode;
 
     // Create a simple colored triangle to prove the renderer works.
-    // Three vertices, one triangle face.
     unsigned short usVertices = 3;
     unsigned short usTriangles = 1;
 
-    NiTriShape* pkTriShape = NiNew NiTriShape(usVertices, NiPoint3::ZERO,
-        NULL, NULL, NULL, usTriangles);
-
-    // Vertex positions (a triangle in the XZ plane, Y-up)
-    NiPoint3* pkVertex = pkTriShape->GetVertices();
+    // Allocate vertex data (NiTriShape takes ownership)
+    NiPoint3* pkVertex = NiNew NiPoint3[usVertices];
     pkVertex[0] = NiPoint3(-10.0f, 0.0f, -10.0f);
     pkVertex[1] = NiPoint3( 10.0f, 0.0f, -10.0f);
     pkVertex[2] = NiPoint3(  0.0f, 0.0f,  10.0f);
 
-    // Normals (all pointing up)
     NiPoint3* pkNormal = NiNew NiPoint3[usVertices];
     pkNormal[0] = NiPoint3(0.0f, 1.0f, 0.0f);
     pkNormal[1] = NiPoint3(0.0f, 1.0f, 0.0f);
     pkNormal[2] = NiPoint3(0.0f, 1.0f, 0.0f);
-    pkTriShape->SetNormals(pkNormal);
 
-    // Vertex colors (red, green, blue)
-    NiColorA* pkColors = NiNew NiColorA[usVertices];
+    NiColorA* pkColors = NiAlloc(NiColorA, usVertices);
     pkColors[0] = NiColorA(1.0f, 0.0f, 0.0f, 1.0f);
     pkColors[1] = NiColorA(0.0f, 1.0f, 0.0f, 1.0f);
     pkColors[2] = NiColorA(0.0f, 0.0f, 1.0f, 1.0f);
-    pkTriShape->SetColors(pkColors);
 
-    // Triangle index
-    unsigned short* pusTriList = pkTriShape->GetTriList();
+    unsigned short* pusTriList = NiAlloc(unsigned short, 3);
     pusTriList[0] = 0;
     pusTriList[1] = 1;
     pusTriList[2] = 2;
+
+    NiTriShape* pkTriShape = NiNew NiTriShape(usVertices, pkVertex,
+        pkNormal, pkColors, NULL, 0, NiGeometryData::NBT_METHOD_NONE,
+        usTriangles, pusTriList);
 
     // Vertex color property so the colors are visible
     NiVertexColorProperty* pkVCProp = NiNew NiVertexColorProperty;
@@ -68,8 +63,8 @@ bool StevenApp::CreateScene()
     pkVCProp->SetLightingMode(NiVertexColorProperty::LIGHTING_E);
     pkTriShape->AttachProperty(pkVCProp);
 
-    // Update model bound
-    pkTriShape->SetModelBound(NiBound(NiPoint3::ZERO, 15.0f));
+    pkTriShape->UpdateProperties();
+    pkTriShape->Update(0.0f);
 
     m_spTriNode = NiNew NiNode;
     m_spTriNode->AttachChild(pkTriShape);
