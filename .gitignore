@@ -1,0 +1,20 @@
+# Build outputs
+*.exe
+*.obj
+*.pdb
+*.ilk
+*.pch
+*.idb
+*.ncb
+*.suo
+*.user
+*.aps
+Debug/
+Release/
+build/VC71/Debug/
+build/VC71/Release/
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
