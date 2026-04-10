@@ -16,14 +16,14 @@ public:
     virtual void UpdateFrame();
 
 protected:
-    // Scene objects
-    NiNodePtr m_spTriNode;
+    bool LoadZoneNIF(const char* pcFilename);
 
-    // Camera orbit state
-    float m_fCamDistance;
+    // Camera state (fly camera)
+    NiPoint3 m_kCamPos;
     float m_fCamYaw;
     float m_fCamPitch;
-    NiPoint3 m_kCamTarget;
+    float m_fMoveSpeed;
+    float m_fLookSpeed;
 };
 
 #endif
