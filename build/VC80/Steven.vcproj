@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="Steven"
+	ProjectGUID="{A1B2C3D4-1234-5678-9ABC-DEF012345678}">
+	<Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="Release"
+			IntermediateDirectory="Release"
+			ConfigurationType="1">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="..\..\src;$(GAMEBRYO_SDK)\Win32\Include"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;STRICT;NIRELEASE"
+				ExceptionHandling="0"
+				RuntimeLibrary="2"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				ForcedIncludeFiles="NiBuildConfiguration.h"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="NiSystem.lib NiMain.lib NiDX9Renderer.lib NiApplication.lib NiVisualTracker.lib NiInput.lib"
+				OutputFile="$(OutDir)\Steven.exe"
+				AdditionalLibraryDirectories="$(GAMEBRYO_SDK)\Win32\Lib\VC80\ReleaseLib"
+				IgnoreDefaultLibraryNames="libci.lib"
+				GenerateDebugInformation="true"
+				SubSystem="2"/>
+		</Configuration>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="Debug"
+			IntermediateDirectory="Debug"
+			ConfigurationType="1">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="..\..\src;$(GAMEBRYO_SDK)\Win32\Include"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;STRICT;NIDEBUG"
+				ExceptionHandling="0"
+				RuntimeLibrary="3"
+				WarningLevel="3"
+				DebugInformationFormat="4"
+				ForcedIncludeFiles="NiBuildConfiguration.h"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="NiSystem.lib NiMain.lib NiDX9Renderer.lib NiApplication.lib NiVisualTracker.lib NiInput.lib"
+				OutputFile="$(OutDir)\Steven.exe"
+				AdditionalLibraryDirectories="$(GAMEBRYO_SDK)\Win32\Lib\VC80\DebugLib"
+				IgnoreDefaultLibraryNames="libci.lib"
+				GenerateDebugInformation="true"
+				SubSystem="2"/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<Filter
+			Name="Source Files"
+			Filter="cpp">
+			<File
+				RelativePath="..\..\src\StevenApp.cpp"/>
+			<File
+				RelativePath="..\..\src\StevenApp_Win32.cpp"/>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="h">
+			<File
+				RelativePath="..\..\src\StevenApp.h"/>
+		</Filter>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

@@ -4,19 +4,34 @@ Reimplementation of the Shin Megami Tensei: Imagine Online client using the Game
 
 ## Requirements
 
-- **Windows XP or later** (D3D9 target)
-- **Visual Studio .NET 2003** (MSVC 7.1) — required for Gamebryo 2.3 VC71 libs
-- **Gamebryo 2.3 Evaluation SDK** — set the `GAMEBRYO_SDK` environment variable to the SDK root:
-  ```
-  set GAMEBRYO_SDK=C:\path\to\Gamebryo_2.3_eval\SDK\DEST_APP_PATH
-  ```
+- **Visual C++ 2005** (MSVC 8.0 / VC80) — cl.exe + link.exe. VS2005 Express Edition works.
+- **Gamebryo 2.3 Evaluation SDK** — provides engine headers and precompiled VC80 libs
+- **DirectX 9 SDK** — D3D9 headers and libs (included in Windows SDK 6.0+)
+
+Can run under Wine on Linux — only the compiler and linker need to work, not the IDE.
 
 ## Build
 
-1. Set the `GAMEBRYO_SDK` environment variable
-2. Open `build/VC71/Steven.sln` in Visual Studio .NET 2003
-3. Build the Release configuration
-4. The executable will be at `build/VC71/Release/Steven.exe`
+### Command line (preferred)
+
+```bat
+set GAMEBRYO_SDK=C:\path\to\Gamebryo_2.3_eval\SDK\DEST_APP_PATH
+build.cmd release
+```
+
+### Visual Studio 2005
+
+1. Set `GAMEBRYO_SDK` environment variable
+2. Open `build/VC80/Steven.sln`
+3. Build Release configuration
+
+### Wine (Linux)
+
+```bash
+# After installing VS2005 Express under Wine:
+export GAMEBRYO_SDK="Z:/home/nam/Documents/smtimagine/Gamebryo_2.3_eval/SDK/DEST_APP_PATH"
+wine cmd /c build.cmd release
+```
 
 ## Current Status
 
