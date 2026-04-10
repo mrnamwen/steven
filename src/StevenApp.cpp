@@ -1,6 +1,10 @@
 #include "StevenApp.h"
 #include <NiMain.h>
 #include <NiStream.h>
+#include <NiAnimation.h>
+#include <NiParticle.h>
+#include <NiCollision.h>
+#include <stdio.h>
 
 //---------------------------------------------------------------------------
 NiApplication* NiApplication::Create()
@@ -16,7 +20,8 @@ StevenApp::StevenApp()
     , m_fMoveSpeed(100.0f)
     , m_fLookSpeed(2.0f)
 {
-    SetMediaPath("./assets/zones/");
+    // Use absolute path — relative paths don't always resolve under Wine
+    SetMediaPath("assets\\zones\\");
 }
 //---------------------------------------------------------------------------
 bool StevenApp::Initialize()
@@ -31,39 +36,88 @@ bool StevenApp::LoadZoneNIF(const char* pcFilename)
 {
     NiStream kStream;
 
-    NiOutputDebugString("Loading zone: ");
-    NiOutputDebugString(pcFilename);
-    NiOutputDebugString("\n");
+    const char* pcConverted = NiApplication::ConvertMediaFilename(pcFilename);
 
-    bool bSuccess = kStream.Load(
-        NiApplication::ConvertMediaFilename(pcFilename));
+    FILE* pLog = fopen("steven.log", "a");
+    if (pLog)
+    {
+        fprintf(pLog, "Loading: '%s' (converted: '%s')\n", pcFilename, pcConverted);
+
+        // Raw file open test
+        FILE* pTest = fopen(pcConverted, "rb");
+        if (pTest)
+        {
+            fseek(pTest, 0, SEEK_END);
+            long sz = ftell(pTest);
+            fseek(pTest, 0, SEEK_SET);
+            char header[64];
+            memset(header, 0, sizeof(header));
+            fread(header, 1, 60, pTest);
+            fclose(pTest);
+            fprintf(pLog, "  File exists: %ld bytes, header: '%.40s'\n", sz, header);
+        }
+        else
+        {
+            fprintf(pLog, "  fopen FAILED for '%s'\n", pcConverted);
+            // Try with forward slashes
+            char szAlt[256];
+            strncpy(szAlt, pcConverted, 255);
+            for (char* p = szAlt; *p; p++) { if (*p == '\\') *p = '/'; }
+            pTest = fopen(szAlt, "rb");
+            fprintf(pLog, "  fopen with '/' for '%s': %s\n", szAlt,
+                pTest ? "OK" : "FAILED");
+            if (pTest) fclose(pTest);
+        }
+        fflush(pLog);
+    }
+
+    bool bSuccess = kStream.Load(pcConverted);
 
     if (!bSuccess)
     {
-        NiOutputDebugString("Failed to load zone NIF!\n");
+        if (pLog)
+        {
+            fprintf(pLog, "  NiStream error code: %d\n", kStream.GetLastError());
+            fprintf(pLog, "  NiStream error msg: %s\n", kStream.GetLastErrorMessage());
+            fclose(pLog);
+        }
         return false;
     }
 
-    // First object should be the scene graph root
     unsigned int uiObjects = kStream.GetObjectCount();
-    NiOutputDebugString("NIF objects: ");
+    if (pLog) fprintf(pLog, "  Loaded %d objects\n", uiObjects);
 
+    int iAttached = 0;
     for (unsigned int i = 0; i < uiObjects; i++)
     {
         NiObject* pkObj = kStream.GetObjectAt(i);
-        if (pkObj && NiIsKindOf(NiNode, pkObj))
+        if (pkObj)
         {
-            NiNode* pkNode = (NiNode*)pkObj;
-            m_spScene->AttachChild(pkNode);
-            NiOutputDebugString("  Attached scene node\n");
+            if (pLog)
+            {
+                const NiRTTI* pkRTTI = pkObj->GetRTTI();
+                fprintf(pLog, "  Object[%d]: %s\n", i,
+                    pkRTTI ? pkRTTI->GetName() : "unknown");
+            }
+
+            if (NiIsKindOf(NiNode, pkObj))
+            {
+                m_spScene->AttachChild((NiNode*)pkObj);
+                iAttached++;
+            }
         }
     }
 
-    // Update transforms
+    if (pLog)
+    {
+        fprintf(pLog, "  Attached %d nodes to scene\n", iAttached);
+        fclose(pLog);
+    }
+
     m_spScene->Update(0.0f);
     m_spScene->UpdateProperties();
 
-    return true;
+    return iAttached > 0;
 }
 //---------------------------------------------------------------------------
 bool StevenApp::CreateScene()
