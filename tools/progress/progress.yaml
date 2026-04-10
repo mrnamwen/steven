@@ -1,0 +1,278 @@
+# SMT:Imagine Client Reimplementation Progress
+# ==============================================
+# This file tracks decomp/reimplementation progress per subsystem.
+#
+# Numbers come from Ghidra analysis of ImagineClientOrig.exe (RU v1.666):
+#   - Total functions: 122,153  (ghidra_stats.txt)
+#   - RTTI classes: 2,181       (rtti_data.json)
+#   - Virtual methods: 63,516   (client_architecture_map.txt)
+#
+# Function counts per subsystem are from ghidra_functions.txt named-function
+# matching plus the RTTI virtual method counts from client_architecture_map.txt.
+#
+# To update: edit the 'done_functions' and 'done_classes' counts, and add
+# entries to the 'completed' lists. Then run: python3 generate.py
+
+project:
+  name: "SMT:Imagine Client"
+  binary: "ImagineClientOrig.exe"
+  binary_size_bytes: 14680064
+  total_functions: 122153
+  total_classes: 2354
+  total_vfuncs: 63516
+
+# History entries for the timeline chart.
+# Add a new entry each time you update progress.
+history:
+  - date: "2026-04-10"
+    total_functions_done: 0
+    total_classes_done: 178
+    note: "Initial tracking. Gamebryo engine classes covered by source."
+
+subsystems:
+  # ----------------------------------------------------------------
+  # Gamebryo Engine - covered by building from 2.3 source
+  # RTTI: 178 Ni* classes in client, 5 RTTI classes with 57 vfuncs
+  # Named functions: 39 Ni* in ghidra_functions.txt
+  # The actual engine is ~30k-40k functions in the binary (statically linked).
+  # We estimate ~38,000 based on the code section analysis.
+  # ----------------------------------------------------------------
+  gamebryo_engine:
+    display_name: "Gamebryo Engine"
+    description: "Ni*/NiDX9/NiInput/NiAnimation - building from 2.3 source"
+    rtti_classes: 178
+    total_classes: 178
+    done_classes: 178
+    # Estimated engine functions in the binary (statically linked Gamebryo)
+    # 178 RTTI classes, ~39 named Ni* funcs visible, but most are unnamed.
+    # Conservative estimate based on eval SDK lib symbol counts.
+    total_functions: 38000
+    done_functions: 38000
+    status: "complete"
+    notes: "Building from Gamebryo 2.3 full-license source. Client uses 2.1.1.1 but core APIs are stable."
+
+  # ----------------------------------------------------------------
+  # Network: recv handlers, send handlers, and network layer
+  # From client_architecture_map.txt:
+  #   Recv Handlers: 388 classes, 392 vfuncs
+  #   Send Handlers: 120 classes, 240 vfuncs
+  #   Network Layer: 302 classes, 620 vfuncs
+  # From ghidra_functions.txt:
+  #   MiRecv*: 412 named functions
+  #   MiClientNetwork*: 963 named functions
+  #   CiNetwork*: counted within the 963
+  # ----------------------------------------------------------------
+  recv_handlers:
+    display_name: "Recv Handlers"
+    description: "MiRecv* - server-to-client packet handlers"
+    rtti_classes: 388
+    total_classes: 388
+    done_classes: 0
+    total_functions: 412
+    done_functions: 0
+    status: "not_started"
+    completed: []
+
+  send_handlers:
+    display_name: "Send Handlers"
+    description: "SC_Send/SC_* - client-to-server packet dispatch"
+    rtti_classes: 120
+    total_classes: 120
+    done_classes: 0
+    total_functions: 640
+    done_functions: 0
+    status: "not_started"
+    completed: []
+
+  network_layer:
+    display_name: "Network Layer"
+    description: "CiNetwork*/MiClientNetwork* - connection, encryption, routing"
+    rtti_classes: 302
+    total_classes: 302
+    done_classes: 0
+    total_functions: 963
+    done_functions: 0
+    status: "not_started"
+    completed: []
+
+  # ----------------------------------------------------------------
+  # UI subsystems
+  # From client_architecture_map.txt:
+  #   UI Windows: 232 classes, 44050 vfuncs
+  #   UI Controls: 90 classes, 5359 vfuncs
+  #   UI Widgets: 44 classes, 3311 vfuncs
+  # From ghidra_functions.txt:
+  #   MiUI_Window*: 2348 named functions
+  #   CiUI_*: 555 named functions
+  #   G*: 568 named functions
+  # ----------------------------------------------------------------
+  ui_windows:
+    display_name: "UI Windows"
+    description: "MiUI_Window_* - game windows (inventory, shop, chat, etc.)"
+    rtti_classes: 232
+    total_classes: 232
+    done_classes: 0
+    total_functions: 2348
+    done_functions: 0
+    status: "not_started"
+    completed: []
+
+  ui_controls:
+    display_name: "UI Controls"
+    description: "CiUI_* - buttons, lists, scrollbars, text fields"
+    rtti_classes: 90
+    total_classes: 90
+    done_classes: 0
+    total_functions: 555
+    done_functions: 0
+    status: "not_started"
+    completed: []
+
+  ui_widgets:
+    display_name: "UI Widgets"
+    description: "G* - gauge, grid, graph widget classes"
+    rtti_classes: 44
+    total_classes: 44
+    done_classes: 0
+    total_functions: 568
+    done_functions: 0
+    status: "not_started"
+    completed: []
+
+  # ----------------------------------------------------------------
+  # Task Pipeline
+  # From client_architecture_map.txt: 260 classes, 1726 vfuncs
+  # From ghidra_functions.txt: 1355 Mi*Task/CiTask named functions
+  # ----------------------------------------------------------------
+  task_pipeline:
+    display_name: "Task Pipeline"
+    description: "Mi*Task/CiTask - async task scheduling and execution"
+    rtti_classes: 260
+    total_classes: 260
+    done_classes: 0
+    total_functions: 1355
+    done_functions: 0
+    status: "not_started"
+    completed: []
+
+  # ----------------------------------------------------------------
+  # Game Systems
+  # ----------------------------------------------------------------
+  battle_system:
+    display_name: "Battle System"
+    description: "MiBattle*/MiRecvBattle*/MiRecvGameAction* - combat logic"
+    rtti_classes: 64
+    total_classes: 64
+    done_classes: 0
+    total_functions: 20
+    done_functions: 0
+    status: "not_started"
+    completed: []
+
+  devil_system:
+    display_name: "Devil/Demon System"
+    description: "MiDevil*/MiRecvDevil* - demon summoning, fusion, compendium"
+    rtti_classes: 58
+    total_classes: 58
+    done_classes: 0
+    total_functions: 33
+    done_functions: 0
+    status: "not_started"
+    completed: []
+
+  zone_map:
+    display_name: "Zone/Map"
+    description: "MiZone*/MiMap*/MiField* - world zones, field management"
+    rtti_classes: 52
+    total_classes: 52
+    done_classes: 0
+    total_functions: 10
+    done_functions: 0
+    status: "not_started"
+    completed: []
+
+  quest_system:
+    display_name: "Quest System"
+    description: "MiQuest*/MiRecvQuest* - quest tracking and completion"
+    rtti_classes: 23
+    total_classes: 23
+    done_classes: 0
+    total_functions: 4
+    done_functions: 0
+    status: "not_started"
+    completed: []
+
+  character_system:
+    display_name: "Character System"
+    description: "MiCharacter*/CiCharacter* - player/NPC character data"
+    rtti_classes: 17
+    total_classes: 17
+    done_classes: 0
+    total_functions: 5
+    done_functions: 0
+    status: "not_started"
+    completed: []
+
+  camera_render:
+    display_name: "Camera/Render"
+    description: "MiCamera*/MiDraw*/MiRender* - camera control, draw pipeline"
+    rtti_classes: 6
+    total_classes: 6
+    done_classes: 0
+    total_functions: 20
+    done_functions: 0
+    status: "not_started"
+    completed: []
+
+  # ----------------------------------------------------------------
+  # Other/Uncategorized - the large bucket of remaining CAVE code
+  # From client_architecture_map.txt: 515 classes, 6454 vfuncs
+  # This includes MiApplication, data loaders, misc game logic, etc.
+  # ----------------------------------------------------------------
+  other:
+    display_name: "Other / Uncategorized"
+    description: "MiApplication, data loaders, misc game logic, C++ stdlib"
+    rtti_classes: 520
+    total_classes: 520
+    done_classes: 0
+    # Remaining named functions not in other categories
+    # Total named non-thunk: ~64625 - 16103 thunks = ~48522 named
+    # Subtract known categories: 38000+412+640+963+2348+555+568+1355+20+33+10+4+5+20 = 44933
+    # Remainder in "other": ~3589 named + 57528 unnamed = lots
+    # But for tracking we use the named non-engine non-thunk remainder
+    total_functions: 3589
+    done_functions: 0
+    status: "not_started"
+    completed: []
+
+  # ----------------------------------------------------------------
+  # Unnamed functions - the 57,528 FUN_* entries from Ghidra
+  # These get attributed to subsystems as they are identified.
+  # ----------------------------------------------------------------
+  unnamed_functions:
+    display_name: "Unnamed Functions (FUN_*)"
+    description: "57,528 unidentified functions awaiting analysis"
+    rtti_classes: 0
+    total_classes: 0
+    done_classes: 0
+    total_functions: 57528
+    done_functions: 0
+    status: "not_started"
+    notes: "These are attributed to other subsystems as they are identified and reimplemented."
+    completed: []
+
+  # ----------------------------------------------------------------
+  # Thunk functions - 16,103 thunks (small jump stubs)
+  # These are trivially covered when their targets are reimplemented.
+  # ----------------------------------------------------------------
+  thunk_functions:
+    display_name: "Thunk Functions"
+    description: "16,103 jump stubs - covered automatically with their targets"
+    rtti_classes: 0
+    total_classes: 0
+    done_classes: 0
+    total_functions: 16103
+    done_functions: 0
+    status: "not_started"
+    notes: "Thunks are trivial redirects. Covered when target function is reimplemented."
+    completed: []
